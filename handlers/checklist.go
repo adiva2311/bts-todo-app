@@ -10,11 +10,6 @@ import (
 
 // Create Checklist
 func CreateChecklist(c echo.Context) error {
-	//var checklist models.Checklist
-	// if err := json.NewDecoder(c.Request().Body).Decode(&checklist); err != nil {
-	// 	return c.JSON(http.StatusBadRequest, "Invalid input")
-	// }
-
 	checklist := new(models.Checklist)
 	if err := c.Bind(checklist); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid input"})
@@ -25,6 +20,21 @@ func CreateChecklist(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to add checklist"})
 	}
 	return c.JSON(http.StatusCreated, checklist)
+}
+
+//Update all checklists
+func UpdateChecklists(c echo.Context) error {
+	id := c.Param("id")
+	checklist := new(models.Checklist)
+	if err := c.Bind(checklist); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid input"})
+	}
+
+	if err := config.DB.Model(&checklist).Where("id = ?", id).Updates(checklist).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, "Error updating checklist")
+	}
+
+	return c.JSON(http.StatusOK, checklist)
 }
 
 // Get all checklists

@@ -24,7 +24,10 @@ func CreateItem(c echo.Context) error {
 	}
 
 	item.ChecklistID = uint(checklistID)
-	config.DB.Create(&item)
+	result := config.DB.Create(&item)
+	if result.Error != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to add items"})
+	}
 	return c.JSON(http.StatusCreated, item)
 }
 
